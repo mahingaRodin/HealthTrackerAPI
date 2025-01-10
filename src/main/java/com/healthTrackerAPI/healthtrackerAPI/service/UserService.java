@@ -3,6 +3,7 @@ package com.healthTrackerAPI.healthtrackerAPI.service;
 
 import com.healthTrackerAPI.healthtrackerAPI.dto.LoginDTO;
 import com.healthTrackerAPI.healthtrackerAPI.dto.UserDTO;
+import com.healthTrackerAPI.healthtrackerAPI.exception.ResourceNotFoundException;
 import com.healthTrackerAPI.healthtrackerAPI.model.User;
 import com.healthTrackerAPI.healthtrackerAPI.repository.UserRepository;
 import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
@@ -37,6 +38,6 @@ public class UserService {
 
     public User getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> ResourceNotFoundException("User not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
 }
