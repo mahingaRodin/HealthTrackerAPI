@@ -1,5 +1,3 @@
-
-```markdown
 # HealthTrackerAPI
 
 HealthTrackerAPI is a RESTful web service designed for managing user accounts, tracking health metrics, and providing functionalities like user registration, login, and health data management. The project is built using **Spring Boot** and uses **JPA** for database management.
