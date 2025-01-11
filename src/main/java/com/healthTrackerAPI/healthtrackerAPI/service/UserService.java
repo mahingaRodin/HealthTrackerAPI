@@ -6,7 +6,9 @@ import com.healthTrackerAPI.healthtrackerAPI.dto.UserDTO;
 import com.healthTrackerAPI.healthtrackerAPI.exception.ResourceNotFoundException;
 import com.healthTrackerAPI.healthtrackerAPI.model.User;
 import com.healthTrackerAPI.healthtrackerAPI.repository.UserRepository;
-import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -39,5 +41,14 @@ public class UserService {
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+    }
+
+    public UserDetailsService userDetailsService() {
+        return new UserDetailsService() {
+            @Override
+            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                return null;
+            }
+        };
     }
 }
