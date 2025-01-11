@@ -3,11 +3,15 @@ package com.healthTrackerAPI.healthtrackerAPI.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public class JwtUtil {
     private String generateToken(Map<String, Object> extractClaims, UserDetails userDetails) {
@@ -40,4 +44,14 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
+
+    private <T> T extractClaim(String token, Function<Claims , T> claimsResolvers) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolvers.apply(claims);
+    }
+
+    private Key getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode("413F4428472B4B6250655368566D5970337336763979244226452948404D6351");
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
 }
