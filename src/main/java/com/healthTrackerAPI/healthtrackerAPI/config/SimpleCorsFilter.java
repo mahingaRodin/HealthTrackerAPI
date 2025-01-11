@@ -8,11 +8,12 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.logging.Filter;
+
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class SimpleCorsFilter implements Filter {
+
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -31,6 +32,13 @@ public class SimpleCorsFilter implements Filter {
 
         if("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            filterChain.doFilter(servletRequest, servletResponse);
         }
+    }
+
+    @Override
+    public void destroy() {
+        Filter.super.destroy();
     }
 }
