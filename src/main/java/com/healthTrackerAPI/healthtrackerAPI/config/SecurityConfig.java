@@ -1,55 +1,51 @@
 package com.healthTrackerAPI.healthtrackerAPI.config;
 
-import com.healthTrackerAPI.healthtrackerAPI.repository.UserRepository;
+import com.healthTrackerAPI.healthtrackerAPI.enums.UserRole;
+import com.healthTrackerAPI.healthtrackerAPI.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
-
-    private final CustomUserDetailsService customUserDetailsService;
-
-    // Constructor-based dependency injection
-    public SecurityConfig(@Lazy CustomUserDetailsService customUserDetailsService) {
-        this.customUserDetailsService = customUserDetailsService;
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public CustomUserDetailsService customUserDetailsService(UserRepository userRepository) {
-        return new CustomUserDetailsService(userRepository);
-    }
-
-    @Bean
-    public AuthenticationManagerBuilder authenticationManagerBuilder(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder auth = http.getSharedObject(AuthenticationManagerBuilder.class);
-        auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
-        return auth;
-    }
+    private final UserService userService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/api/auth/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .permitAll();
+        http.csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(request ->
+                        request.requestMatchers("/api/users/**").permitAll()
+                                .requestMatchers("/api/login/**").hasAnyAuthority(UserRole.USER.name())
+                                .anyRequest().authenticated())
+                .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
+                .authenticationProvider(authenticationProvider()).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    private AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userService.userDetailsService());
+        authProvider.setPasswordEncoder(new BCryptPasswordEncoder());
+        return authProvider;
     }
 }
