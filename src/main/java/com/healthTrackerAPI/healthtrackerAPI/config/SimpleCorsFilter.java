@@ -42,3 +42,6 @@ public class SimpleCorsFilter implements Filter {
         Filter.super.destroy();
     }
 }
+
+
+//debugged
