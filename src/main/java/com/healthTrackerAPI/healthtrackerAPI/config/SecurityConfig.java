@@ -1,47 +1,47 @@
 package com.healthTrackerAPI.healthtrackerAPI.config;
 
-
+import com.healthTrackerAPI.healthtrackerAPI.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.SecurityBuilder;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig implements Security, WebSecurityConfigurer {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final CustomUserDetailsService customUserDetailsService;
 
-    public SecurityConfig(JwtAuthenticationEntryPoint unauthorizedHandler, CustomUserDetailsService customUserDetailsService) {
+    // Constructor-based dependency injection
+    public SecurityConfig(@Lazy CustomUserDetailsService customUserDetailsService) {
         this.customUserDetailsService = customUserDetailsService;
     }
 
     @Override
-    public void configure(AuthenticationManagerBuilder auth)  throws  Exception{
-        auth.userDetailsService(customUserDetailsService).passwordEncoder(null);
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        // Set the custom UserDetailsService and password encoder
+        auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
     }
 
     @Override
-    @Bean
-    public boolean authenticationManagerBean() throws  Exception {
-        return  super.equals(authenticationManagerBean());
-    }
-
-    @Override
-    public void init(SecurityBuilder builder) throws Exception {
-
-    }
-
-    @Override
-    public void configure(SecurityBuilder builder) throws Exception {
-
+    protected void configure(HttpSecurity http) throws Exception {
+        // Define URL patterns and authentication mechanisms (example, modify based on your needs)
+        http.csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/api/auth/**").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                .permitAll();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // Return the password encoder used for user authentication
         return new BCryptPasswordEncoder();
     }
 }
