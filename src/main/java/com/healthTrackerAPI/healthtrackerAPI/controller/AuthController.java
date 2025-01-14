@@ -4,7 +4,6 @@ import com.healthTrackerAPI.healthtrackerAPI.dto.AuthenticationRequest;
 import com.healthTrackerAPI.healthtrackerAPI.dto.AuthenticationResponse;
 import com.healthTrackerAPI.healthtrackerAPI.dto.SignupRequest;
 import com.healthTrackerAPI.healthtrackerAPI.dto.UserDTO;
-import com.healthTrackerAPI.healthtrackerAPI.jwt.UserServiceImpl;
 import com.healthTrackerAPI.healthtrackerAPI.model.User;
 import com.healthTrackerAPI.healthtrackerAPI.repository.UserRepository;
 import com.healthTrackerAPI.healthtrackerAPI.service.UserService;
