@@ -8,7 +8,6 @@ import com.healthTrackerAPI.healthtrackerAPI.model.User;
 import com.healthTrackerAPI.healthtrackerAPI.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
