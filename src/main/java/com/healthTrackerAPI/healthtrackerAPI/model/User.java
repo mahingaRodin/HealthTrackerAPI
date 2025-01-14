@@ -2,15 +2,19 @@ package com.healthTrackerAPI.healthtrackerAPI.model;
 
 import com.healthTrackerAPI.healthtrackerAPI.dto.UserDTO;
 import com.healthTrackerAPI.healthtrackerAPI.enums.UserRole;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
 
+@Entity
+@Data
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
