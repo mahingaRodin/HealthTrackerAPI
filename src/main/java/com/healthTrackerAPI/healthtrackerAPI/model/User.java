@@ -1,24 +1,67 @@
 package com.healthTrackerAPI.healthtrackerAPI.model;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import com.healthTrackerAPI.healthtrackerAPI.dto.UserDTO;
+import com.healthTrackerAPI.healthtrackerAPI.enums.UserRole;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-@Getter
-@Setter
-@Entity
-@Table(name = "users") // Change the table name to avoid conflict with reserved keywords
-public class User {
+import java.util.Collection;
+import java.util.List;
+
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = false, unique = true)
-    private String username;
-
-    @Column(nullable = false, unique = true)
     private String email;
-
-    @Column(nullable = false) // Remove `unique = true` for passwords as they don't need to be unique
     private String password;
+    private String username;
+    private UserRole userRole;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername(){
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    public UserDTO getUserDto() {
+        UserDTO dto = new UserDTO();
+        dto.setId(id);
+        dto.setUsername(username);
+        dto.setEmail(email);
+        dto.setUserRole(userRole);
+        return dto;
+    }
 }
